@@ -22,7 +22,7 @@ public class TestSteps
     [When(@"I replace the name with 'Parker'")]
     public async Task WhenIReplaceTheNameWithParker()
     {
-        await page.TypeTextAsync(page.NameInput, "Parker", true);
+        await page.TypeTextAsync(page.NameInput, "Parker");
     }
 
     [When(@"I correct the name to 'Parker'")]
