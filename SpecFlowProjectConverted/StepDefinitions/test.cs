@@ -1,56 +1,64 @@
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using System.Threading.Tasks;
+using Microsoft.Playwright;
 
-[Binding]
-public class TestSteps
+namespace SpecFlowProjectConverted.StepDefinitions
 {
-    private readonly Page _page;
-
-    public TestSteps(Page page)
+    [Binding]
+    public class TestSteps
     {
-        _page = page;
-    }
+        private readonly IPage _page;
 
-    [Given(@"I navigate to the test page")]
-    public async Task GivenINavigateToTheTestPage()
-    {
-        await _page.GoToAsync("https://devexpress.github.io/testcafe/example/");
-    }
+        public TestSteps(IPage page)
+        {
+            _page = page;
+        }
 
-    [When(@"I type name '([^']*)' into the input field")]
-    public async Task WhenITypeNameIntoTheInputField(string name)
-    {
-        await _page.TypeTextAsync(_page.NameInput, name);
-    }
+        [Given(@"I navigate to the TestCafe example page")]
+        public async Task GivenINavigateToTheTestCafeExamplePage()
+        {
+            await _page.GotoAsync("https://devexpress.github.io/testcafe/example/");
+        }
 
-    [Then(@"the input field should contain '([^']*)'")]
-    public async Task ThenTheInputFieldShouldContain(string expectedName)
-    {
-        var value = await _page.GetInputValueAsync(_page.NameInput);
-        value.Should().Be(expectedName);
-    }
+        [When(@"I type 'Peter' in the name input field")]
+        public async Task WhenITypePeterInTheNameInputField()
+        {
+            await _page.FillAsync("#developer-name", "Peter");
+        }
 
-    // Add more step definitions as needed
-}
+        [When(@"I replace the name with 'Parker'")]
+        public async Task WhenIReplaceTheNameWithParker()
+        {
+            await _page.FillAsync("#developer-name", "Parker");
+        }
 
-public class Page
-{
-    public string NameInput => "#developer-name";
+        [Then(@"the name input field should contain 'Parker'")]
+        public async Task ThenTheNameInputFieldShouldContainParker()
+        {
+            var value = await _page.InputValueAsync("#developer-name");
+            value.Should().Be("Parker");
+        }
 
-    public async Task GoToAsync(string url)
-    {
-        // Implement navigation logic
-    }
+        [When(@"I type 'Peter Parker' in the name input field")]
+        public async Task WhenITypePeterParkerInTheNameInputField()
+        {
+            await _page.FillAsync("#developer-name", "Peter Parker");
+        }
 
-    public async Task TypeTextAsync(string selector, string text)
-    {
-        // Implement typing logic
-    }
+        [When(@"I move the caret position to 5 and press backspace")]
+        public async Task WhenIMoveTheCaretPositionTo5AndPressBackspace()
+        {
+            await _page.ClickAsync("#developer-name", new ClickOptions { Position = new Position { X = 5, Y = 0 } });
+            await _page.PressAsync("#developer-name", "Backspace");
+        }
 
-    public async Task<string> GetInputValueAsync(string selector)
-    {
-        // Implement value retrieval logic
-        return string.Empty;
+        [Then(@"the name input field should contain 'Pete Parker'")]
+        public async Task ThenTheNameInputFieldShouldContainPeteParker()
+        {
+            var value = await _page.InputValueAsync("#developer-name");
+            value.Should().Be("Pete Parker");
+        }
+
+        // Additional steps for other test cases can be added here following the same pattern
     }
 }
