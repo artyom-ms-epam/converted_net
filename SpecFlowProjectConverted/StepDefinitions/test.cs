@@ -12,43 +12,41 @@ public class TestSteps
         _page = page;
     }
 
-    [Given("I navigate to the example page")]
+    [Given(@"I navigate to the example page")]
     public async Task GivenINavigateToTheExamplePage()
     {
-        await _page.GoToAsync("https://devexpress.github.io/testcafe/example/");
+        await _page.GotoAsync("https://devexpress.github.io/testcafe/example/");
     }
 
-    [When("I type the name Peter Parker")]
-    public async Task WhenITypeTheNamePeterParker()
+    [When(@"I type the name Peter")]
+    public async Task WhenITypeTheNamePeter()
     {
         await _page.TypeTextAsync(_page.NameInput, "Peter");
-        await _page.TypeTextAsync(_page.NameInput, "Paker", true);
-        await _page.TypeTextAsync(_page.NameInput, "r", 2);
     }
 
-    [Then("the name input should be Parker")]
+    [Then(@"the name input should be Parker")]
     public async Task ThenTheNameInputShouldBeParker()
     {
         var value = await _page.GetValueAsync(_page.NameInput);
         value.Should().Be("Parker");
     }
 
-    [When("I click an array of labels")]
+    [When(@"I click an array of labels")]
     public async Task WhenIClickAnArrayOfLabels()
     {
         foreach (var feature in _page.FeatureList)
         {
             await _page.ClickAsync(feature.Label);
-            var checked = await _page.IsCheckedAsync(feature.Checkbox);
-            checked.Should().BeTrue();
+            var isChecked = await _page.IsCheckedAsync(feature.Checkbox);
+            isChecked.Should().BeTrue();
         }
     }
 
-    [When("I type and edit text using keyboard")]
-    public async Task WhenITypeAndEditTextUsingKeyboard()
+    [When(@"I deal with text using keyboard")]
+    public async Task WhenIDealWithTextUsingKeyboard()
     {
         await _page.TypeTextAsync(_page.NameInput, "Peter Parker");
-        await _page.ClickAsync(_page.NameInput, 5);
+        await _page.ClickAsync(_page.NameInput, new ClickOptions { CaretPos = 5 });
         await _page.PressKeyAsync("backspace");
         var value = await _page.GetValueAsync(_page.NameInput);
         value.Should().Be("Pete Parker");
@@ -57,18 +55,18 @@ public class TestSteps
         value.Should().Be("P. Parker");
     }
 
-    [When("I move the slider")]
+    [When(@"I move the slider")]
     public async Task WhenIMoveTheSlider()
     {
         var initialOffset = await _page.GetOffsetLeftAsync(_page.Slider.Handle);
         await _page.ClickAsync(_page.TriedTestCafeCheckbox);
         await _page.DragToElementAsync(_page.Slider.Handle, _page.Slider.Tick.WithText("9"));
-        var offset = await _page.GetOffsetLeftAsync(_page.Slider.Handle);
-        offset.Should().BeGreaterThan(initialOffset);
+        var newOffset = await _page.GetOffsetLeftAsync(_page.Slider.Handle);
+        newOffset.Should().BeGreaterThan(initialOffset);
     }
 
-    [When("I edit text using selection")]
-    public async Task WhenIEditTextUsingSelection()
+    [When(@"I deal with text using selection")]
+    public async Task WhenIDealWithTextUsingSelection()
     {
         await _page.TypeTextAsync(_page.NameInput, "Test Cafe");
         await _page.SelectTextAsync(_page.NameInput, 7, 1);
@@ -77,7 +75,7 @@ public class TestSteps
         value.Should().Be("Tfe");
     }
 
-    [When("I handle native confirmation dialog")]
+    [When(@"I handle native confirmation dialog")]
     public async Task WhenIHandleNativeConfirmationDialog()
     {
         await _page.SetNativeDialogHandlerAsync(() => true);
@@ -85,12 +83,12 @@ public class TestSteps
         var dialogHistory = await _page.GetNativeDialogHistoryAsync();
         dialogHistory[0].Text.Should().Be("Reset information before proceeding?");
         await _page.ClickAsync(_page.SubmitButton);
-        var results = await _page.GetInnerTextAsync(_page.Results);
-        results.Should().Contain("Peter Parker");
+        var resultText = await _page.GetInnerTextAsync(_page.Results);
+        resultText.Should().Contain("Peter Parker");
     }
 
-    [When("I pick an option from select")]
-    public async Task WhenIPickAnOptionFromSelect()
+    [When(@"I pick option from select")]
+    public async Task WhenIPickOptionFromSelect()
     {
         await _page.ClickAsync(_page.InterfaceSelect);
         await _page.ClickAsync(_page.InterfaceSelectOption.WithText("Both"));
@@ -98,22 +96,22 @@ public class TestSteps
         value.Should().Be("Both");
     }
 
-    [When("I fill the form")]
-    public async Task WhenIFillTheForm()
+    [When(@"I fill a form")]
+    public async Task WhenIFillAForm()
     {
         await _page.TypeTextAsync(_page.NameInput, "Bruce Wayne");
         await _page.ClickAsync(_page.MacOSRadioButton);
         await _page.ClickAsync(_page.TriedTestCafeCheckbox);
         await _page.TypeTextAsync(_page.CommentsTextArea, "It's...");
-        await Task.Delay(500);
+        await _page.WaitAsync(500);
         await _page.TypeTextAsync(_page.CommentsTextArea, "\ngood");
-        await Task.Delay(500);
+        await _page.WaitAsync(500);
         await _page.SelectTextAreaContentAsync(_page.CommentsTextArea, 1, 0);
         await _page.PressKeyAsync("delete");
         await _page.TypeTextAsync(_page.CommentsTextArea, "awesome!!!");
-        await Task.Delay(500);
+        await _page.WaitAsync(500);
         await _page.ClickAsync(_page.SubmitButton);
-        var results = await _page.GetInnerTextAsync(_page.Results);
-        results.Should().Contain("Bruce Wayne");
+        var resultText = await _page.GetInnerTextAsync(_page.Results);
+        resultText.Should().Contain("Bruce Wayne");
     }
 }
